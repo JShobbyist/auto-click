@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script>
+		var hh = 0;
+		var mm = 0;
+		var sec = 0;
+		var msec = 0;
+		var mss = 0;
+		var k = 2;
+		var j = 0;
+		var add = "";
+		// function setTime() {
+		// 	var hh = $("#hour").val();
+		// 	var mm = $("#min").val();
+		// 	var sec = $("#sec").val();
+		// 	document.getElementById('setTime').innerHTML = "Time seted: " 
+		// 	+ hh + ":" + mm + ":" + sec;
+		// }
+		
+		function startTime() {
+		  var today = new Date();
+		  var h = today.getHours();
+		  var m = today.getMinutes();
+		  var s = today.getSeconds();
+		  var ss = today.getMilliseconds();
+		  if ( k == 3 ) {
+		  	k = 4;
+		  }
+		  // m = checkTime(m);
+		  // s = checkTime(s);
+		  document.getElementById('txt').innerHTML =
+		  h + ":" + m + ":" + s + "::" + ss;
+
+		  document.getElementById("confirm").addEventListener("click", function(){
+		  	hh = $("#hour").val();
+			mm = $("#min").val();
+			sec = $("#sec").val();
+			msec = $("#msec").val();
+			add = $("#add").val();
+			msec = msec - 0;
+			j = 0;
+			k = 2;
+			document.getElementById('setTime').innerHTML = "Time seted: " 
+			+ hh + ":" + mm + ":" + sec + ":" + msec;
+		  });
+
+		  //decide if msec is zero or not
+		  if ( msec < 9 ) {
+		  	if ( sec == 0 ) {
+		  		if ( mm == 0 ) {
+		  			if ( hh == 0 ) {
+		  				hh = 23;
+		  				mm = 59;
+		  				sec = 59;
+		  				msec += 1001;
+		  			}
+		  			else {
+		  				hh -= 1;
+		  				mm = 59;
+		  				sec = 59;
+		  				msec += 1001;
+		  			}
+		  		}
+		  		else {
+		  			mm -= 1;
+		  			sec = 59;
+		  			msec += 1001;
+		  		}
+		  	}
+		  	else {
+		  		msec += 1001;
+		  		sec -= 1;
+		  	}
+		  	// document.getElementById('txt2').innerHTML = hh + ":" + mm + ":" + sec + "::" + msec + 
+			  // 	"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	Real time seted.";
+		  }
+		  mss = msec - ss;
+		  if ( msec > 1000 && k == 2 && h == hh && m == mm && s == sec && mss < 19 ) {
+		  	// k = 0;
+		  	// click_button( h, m, s, ss);
+		  	k = 3;
+
+		  	// document.getElementById('txt3').innerHTML = hh + ":" + mm + ":" + sec + "::" + msec + 
+			  // 	"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	Changed.";
+		  }
+		  if ( k == 4 ) {
+		  	click_button( h, m, s, ss);
+		  	k = 0;
+		  }
+
+
+		  if ( h == hh && m == mm && s == sec && mss < 10 && mss > 0 ) {
+			  	if ( j == 0 && k == 2 ) {
+					click_button( h, m, s, ss); 
+					k = 0;
+				}
+		  }
+		  var t = setTimeout(startTime, 1);
+		}
+
+		function click_button( h, m, s, ss) {
+			j = 1;
+		  	$.ajax({
+			  url:"https://www.eihale.gov.tr/Kullanici/Ihale/Detay",
+			  type:"POST",
+			  data:{
+			  	id: add,
+				YeniTeklif: "50",
+				TeklifOnay: "50",
+				kullanicininMevcutTeklifiVarMi: "False",
+				IhaleUsul: "1",
+				Kategori: "6"
+		      }
+
+			}).done(function(data) {
+			  alert(data);
+			});
+		  	document.getElementById('txt1').innerHTML = h + ":" + m + ":" + s + "::" + ss + 
+		  	"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	Successful!! Button clicked.";
+		  	return;
+		}
+		// function checkTime(i) {
+		//   if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+		//   return i;
+		// }
+	</script>
+</head>
+
+<body onload="startTime()">
+	<label>Set the address:</label>
+	<input type="text" name="add" id="add">
+	<br>
+	<label>Set the time. (Default: 00:00:00:000)</label></br>
+	<label>Hour:</label>
+	<input type="text" name="hour" id="hour">
+	<label>Minute:</label>
+	<input type="text" name="min" id="min">
+	<label>Second:</label>
+	<input type="text" name="sec" id="sec">
+	<label>Millisecond:</label>
+	<input type="text" name="msec" id="msec">
+	<input type="Button" name="confirm" value="Confirm" id="confirm">
+	<div id="setTime"></div>
+
+	</br>
+	<label>Current time:</label>
+	<div id="txt"></div>
+	<div id="txt2"></div>
+	<div id="txt3"></div>
+	<div id="txt1"></div>
+
+</body>
+</html>
